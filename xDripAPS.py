@@ -1,12 +1,15 @@
 import json
+import os
 import sqlite3
-from flask import Flask, request, abort
+from flask import Flask, request
 #from flask_httpauth import HTTPBasicAuth
 from flask_restful import Resource, Api
-from json import dumps
 
 # Maximum number of rows to retain - older rows will be deleted to minimise disk usage
 MAX_ROWS = 336
+
+# SQLite3 .db file
+DB_FILE = "entries.db"
 
 # Connect to databse
 #conn = sqlite3.connect('entries.db')
@@ -14,12 +17,46 @@ MAX_ROWS = 336
 app = Flask(__name__)
 api = Api(app)
 
+def create_schema():
+    conn = sqlite3.connect(DB_FILE)
+    qry = """CREATE TABLE entries
+            (device text,
+            date numeric,
+            dateString text,
+            sgv numeric,
+            direction text,
+            type text,
+            filtered numeric,
+            unfiltered numeric,
+            rssi numeric,
+            noise numeric)"""
+
+    conn.execute(qry)
+    conn.commit() # Required?
+    conn.close()
+
+def startup_checks():
+    conn = sqlite3.connect(DB_FILE)
+    c = conn.cursor()
+    c.execute("PRAGMA integrity_check")
+    status = str(c.fetchone()[0])
+    if status == "ok":
+        print "Startup checks OK"
+    else:
+        print "Startup checks FAIL"
+        print "Deleting SQLite database file (" + DB_FILE + ")..."        
+        # delete database
+        conn.close()
+        os.remove(DB_FILE)
+        # re-create database
+        create_schema()
+
 class Entries(Resource):
 
     def get(self):
 
 	# Connect to database
-	conn = sqlite3.connect('entries.db')
+	conn = sqlite3.connect(DB_FILE)
 
 	# Housekeeping first
 	qry =  "DELETE FROM entries WHERE ROWID IN " 
@@ -96,4 +133,5 @@ class Entries(Resource):
 api.add_resource(Entries, '/api/v1/entries')
 
 if __name__ == '__main__':
-     app.run(host='0.0.0.0')
+    startup_checks()
+    app.run(host='0.0.0.0')
