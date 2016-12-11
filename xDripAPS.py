@@ -33,21 +33,26 @@ def create_schema():
     conn.close()
 
 def startup_checks():
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("PRAGMA integrity_check")
-    status = str(c.fetchone()[0])
-    if status == "ok":
-        print "Startup checks OK"
-    else:
-        print "Startup checks FAIL"
-        # Delete corrupt database
-        print "Deleting corrupt SQLite database file (" + DB_FILE + ")..."
-        conn.close()
-        os.remove(DB_FILE)
-        # re-create database
-        print "Re-cresting database..."
-        create_schema()
+    # Does .db file exist?
+    if os.path.isfile(DB_NAME):
+        # Check for corruption
+        conn = sqlite3.connect(DB_FILE)
+        c = conn.cursor()
+        c.execute("PRAGMA integrity_check")
+        status = str(c.fetchone()[0])
+        if status == "ok":
+            print "Startup checks OK"
+        else:
+            print "Startup checks FAIL"
+            # Delete corrupt database
+            print "Deleting corrupt SQLite database file (" + DB_FILE + ")..."
+            conn.close()
+            os.remove(DB_FILE)
+            # re-create database
+            print "Re-cresting database..."
+            create_schema()
+    # Database doesn't exist, so create it
+    create_schema()
 
 class Entries(Resource):
 
