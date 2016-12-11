@@ -42,4 +42,8 @@ Setup steps (to be completed) -
   xDrip > Settings > REST API Upload > Set Enabled and enter Base URL: http://[Pi/Edison_IP_address]:5000/api/v1/
 
 6. Use the microservice within OpenAPS
-  TODO: add details here
+  e.g.
+  ```
+  openaps device add xdrip process 'bash -c "curl -s http://localhost:5000/api/v1/entries?count=288"'
+  openaps report add monitor/glucose.json text xdrip shell
+  ```
