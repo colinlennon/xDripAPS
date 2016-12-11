@@ -8,11 +8,8 @@ from flask_restful import Resource, Api
 # Maximum number of rows to retain - older rows will be deleted to minimise disk usage
 MAX_ROWS = 336
 
-# SQLite3 .db file
-DB_FILE = "entries.db"
-
-# Connect to databse
-#conn = sqlite3.connect('entries.db')
+# SQLite3 .db filename
+DB_FILE = "xDripAPS.db"
 
 app = Flask(__name__)
 api = Api(app)
@@ -44,11 +41,12 @@ def startup_checks():
         print "Startup checks OK"
     else:
         print "Startup checks FAIL"
-        print "Deleting SQLite database file (" + DB_FILE + ")..."        
-        # delete database
+        # Delete corrupt database
+        print "Deleting corrupt SQLite database file (" + DB_FILE + ")..."
         conn.close()
         os.remove(DB_FILE)
         # re-create database
+        print "Re-cresting database..."
         create_schema()
 
 class Entries(Resource):
@@ -116,15 +114,13 @@ class Entries(Resource):
         unfiltered                      = json_data[0]['unfiltered']
         rssi                            = json_data[0]['rssi']
         noise                           = json_data[0]['noise']
-        #xDrip_filtered_calculated_value = json_data[0]['xDrip_filtered_calculated_value']
-        #sysTime                         = json_data[0]['sysTime']
-    
+            
         # Perform insert
         qry  = "INSERT INTO entries (device, date, dateString, sgv, direction, type, "
         qry += "filtered, unfiltered, rssi, noise) "
         qry += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
  
-        conn = sqlite3.connect('entries.db') 
+        conn = sqlite3.connect(DB_FILE) 
 	conn.execute(qry, (device, date, dateString, sgv, direction, type, filtered, unfiltered, rssi, noise))
 	conn.commit()
 	conn.close()
