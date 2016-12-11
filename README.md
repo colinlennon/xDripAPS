@@ -38,7 +38,8 @@ Setup steps (to be completed) -
   e.g. - 
   `@reboot         python /home/root/xDripAPS/xDripAPS.py`
 
-5. Cofigure the xDrip Android app
+5. Cofigure the xDrip Android app -
+
 xDrip > Settings > REST API Upload > Set Enabled and enter Base URL: http://[Pi/Edison_IP_address]:5000/api/v1/
 
 6. Use the microservice within OpenAPS
