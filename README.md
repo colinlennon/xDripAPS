@@ -7,7 +7,8 @@ xDripAPS is a lightweight microservice intended to be used on Raspberri Pi or In
 
 Setup steps (to be completed) - 
 
-1. Install SQLite3
+1. Install SQLite3 -
+
   a. Raspbian - 
     <code>
     apt-get install sqlite3
