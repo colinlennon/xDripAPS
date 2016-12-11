@@ -10,35 +10,33 @@ Setup steps (to be completed) -
 1. Install SQLite3 -
 
   a. Raspbian - 
-    <code>
+    ```
     apt-get install sqlite3
-    </code>
+    ```
 
   b. Yocto - 
-    <code>
+    ```
     cd ~
     wget https://sqlite.org/2016/sqlite-tools-linux-x86-3150200.zip
     unzip sqlite-tools-linux-x86-3150200.zip
     mv sqlite-tools-linux-x86-3150200 sqlite
-    </code>
+    ```
 
 2. Get dependencies -
-  <code>
+  ```
   pip install flask
   pip install flask-restful
-  </code>
+  ```
 
 3. Clone this repo -
-  <code>
+  ```
   cd ~
   git clone https://github.com/colinlennon/xDripAPS.git
-  </code>
+  ```
 
 4. Add cron entry to start the microservice at startup - 
   e.g. - 
-  <code>
-  @reboot         python /home/root/xDripAPS/xDripAPS.py
-  </code>
+  `@reboot         python /home/root/xDripAPS/xDripAPS.py`
 
 5. Cofigure the xDrip Android app
 xDrip > Settings > REST API Upload > Set Enabled and enter Base URL: http://[Pi/Edison_IP_address]:5000/api/v1/
