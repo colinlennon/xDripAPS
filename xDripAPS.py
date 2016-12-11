@@ -9,7 +9,7 @@ from flask_restful import Resource, Api
 MAX_ROWS = 336
 
 # SQLite3 .db filename
-DB_FILE = "xDripAPS.db"
+DB_FILE = os.environ['HOME']+ "/xDripAPS.db"
 
 app = Flask(__name__)
 api = Api(app)
@@ -42,6 +42,7 @@ def startup_checks():
         status = str(c.fetchone()[0])
         if status == "ok":
             print "Startup checks OK"
+            conn.close()
         else:
             print "Startup checks FAIL"
             # Delete corrupt database
@@ -51,8 +52,9 @@ def startup_checks():
             # re-create database
             print "Re-cresting database..."
             create_schema()
-    # Database doesn't exist, so create it
-    create_schema()
+    else:
+        # Database doesn't exist, so create it
+        create_schema()
 
 class Entries(Resource):
 
