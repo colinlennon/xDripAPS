@@ -34,7 +34,7 @@ def create_schema():
 
 def startup_checks():
     # Does .db file exist?
-    if os.path.isfile(DB_NAME):
+    if os.path.isfile(DB_FILE):
         # Check for corruption
         conn = sqlite3.connect(DB_FILE)
         c = conn.cursor()
