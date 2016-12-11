@@ -14,12 +14,12 @@ Setup steps (to be completed) -
     </code>
 
   Yocto - 
-  <code>
-  cd ~
-  wget https://sqlite.org/2016/sqlite-tools-linux-x86-3150200.zip
-  unzip sqlite-tools-linux-x86-3150200.zip
-  mv sqlite-tools-linux-x86-3150200 sqlite
-  </code>
+    <code>
+    cd ~
+    wget https://sqlite.org/2016/sqlite-tools-linux-x86-3150200.zip
+    unzip sqlite-tools-linux-x86-3150200.zip
+    mv sqlite-tools-linux-x86-3150200 sqlite
+    </code>
 
 2. Get dependencies -
   <code>
