@@ -8,12 +8,12 @@ xDripAPS is a lightweight microservice intended to be used on Raspberri Pi or In
 Setup steps (to be completed) - 
 
 1. Install SQLite3
-  Raspbian - 
+  a. Raspbian - 
     <code>
     apt-get install sqlite3
     </code>
 
-  Yocto - 
+  b. Yocto - 
     <code>
     cd ~
     wget https://sqlite.org/2016/sqlite-tools-linux-x86-3150200.zip
