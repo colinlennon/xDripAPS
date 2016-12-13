@@ -44,6 +44,6 @@ Setup steps (to be completed) -
 6. Use the microservice within OpenAPS
   e.g.
   ```
-  openaps device add xdrip process 'bash -c "curl -s http://localhost:5000/api/v1/entries?count=288"'
+  openaps device add xdrip process 'bash -c "curl -s http://localhost:5000/api/v1/entries?count=288 | json -e \"this.glucose = this.sgv\""'
   openaps report add monitor/glucose.json text xdrip shell
   ```
