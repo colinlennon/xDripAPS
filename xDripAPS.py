@@ -9,7 +9,7 @@ from flask_restful import Resource, Api
 MAX_ROWS = 336
 
 # SQLite3 .db filename
-DB_FILE = os.environ['HOME']+ "/xDripAPS.db"
+DB_FILE = os.environ['HOME']+ "/.xDripAPS_data/xDripAPS.db"
 
 app = Flask(__name__)
 api = Api(app)
