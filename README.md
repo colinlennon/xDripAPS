@@ -3,7 +3,7 @@ REST microservice designed to allow xDrip CGM data to be used in OpenAPS
 
 PLEASE NOTE: the code in this repository is a work-in-progress and should be used for experimental purposes only. 
 
-xDripAPS is a lightweight microservice intended to be used on Raspberri Pi or Intel Edison OpenAPS rigs. Users of the xDrip Android app can use the "REST API Upload" option to send CGM data to this service. The service stores the data in a SQLite3 database. The service can be invoked from within OpenAPS to retrieve CGM data. This approach allows for offline/camping-mode looping. No internet access is required, just a local network between the Android phone and the OpenAPS rig (using either WiFi hotspotting or bluetooth tethering).
+xDripAPS is a lightweight microservice intended to be used on Raspberry Pi or Intel Edison OpenAPS rigs. Users of the xDrip Android app can use the "REST API Upload" option to send CGM data to this service. The service stores the data in a SQLite3 database. The service can be invoked from within OpenAPS to retrieve CGM data. This approach allows for offline/camping-mode looping. No internet access is required, just a local network between the Android phone and the OpenAPS rig (using either WiFi hotspotting or bluetooth tethering).
 
 Setup steps (to be completed) - 
 
@@ -36,7 +36,7 @@ Setup steps (to be completed) -
 
 4. Create directory for database file - 
   ```
-  mkdir -p $HOME/.xDripAPA_data
+  mkdir -p $HOME/.xDripAPS_data
   ```
 
 5. Add cron entry to start the microservice at startup - 
