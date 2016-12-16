@@ -31,24 +31,26 @@ Setup steps (to be completed) -
 3. Clone this repo -
   ```
   cd ~
-  git clone https://github.com/colinlennon/xDripAPS.git
+  git clone https://github.com/colinlennon/xDripAPS.git .xDripAPS
   ```
 
 4. Create directory for database file - 
   ```
-  mkdir -p $HOME/.xDripAPS_data
+  mkdir -p ~/.xDripAPS_data
   ```
 
 5. Add cron entry to start the microservice at startup - 
   e.g. - 
-  `@reboot         python /home/root/xDripAPS/xDripAPS.py`
+  `@reboot         python /home/root/.xDripAPS/xDripAPS.py`
 
 6. Cofigure the xDrip Android app -
-  xDrip > Settings > REST API Upload > Set Enabled and enter Base URL: http://[Pi/Edison_IP_address]:5000/api/v1/
+  xDrip > Settings > REST API Upload > Set Enabled and enter Base URL: http://[API_SECRET]@[Pi/Edison_IP_address]:5000/api/v1/
+  
+  (Note: Enter your plain-text API_SECRET in the Android app, not the hashed version of it).
 
 7. Use the microservice within OpenAPS
   e.g.
   ```
-  openaps device add xdrip process 'bash -c "curl -s http://localhost:5000/api/v1/entries?count=288 | json -e \"this.glucose = this.sgv\""'
+  openaps device add xdrip process 'bash -c "curl -s http://localhost:5000/api/v1/entries?count=288"'
   openaps report add monitor/glucose.json text xdrip shell
   ```
