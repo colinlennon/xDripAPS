@@ -2,7 +2,6 @@ import json
 import os
 import sqlite3
 from flask import Flask, request
-#from flask_httpauth import HTTPBasicAuth
 from flask_restful import Resource, Api
 
 # Maximum number of rows to retain - older rows will be deleted to minimise disk usage
@@ -95,7 +94,8 @@ class Entries(Resource):
                 'filtered' : row[7],
                 'unfiltered' : row[8],
                 'rssi' : row[9],
-                'noise' : row[10]}
+                'noise' : row[10],
+	        'glucose' : row[4]}
             results_as_dict.append(result_as_dict)
 
         conn.close()
@@ -103,9 +103,18 @@ class Entries(Resource):
 
     def post(self):
 
-	# TODO: implement security
-	#password = request.authorization.password
-	#print 'PWD :: ' + password
+       # Get hashed API secret from request
+        request_secret_hashed = request.headers['Api_Secret']
+        print 'request_secret_hashed : ' + request_secret_hashed
+
+        # Get API_SECRET environment variable
+        env_secret_hashed = os.environ['API_SECRET']
+	
+	# Authentication check
+        if request_secret_hashed != env_secret_hashed:
+            print 'Authentication failure!'
+            print 'API Secret passed in request does not match API_SECRET environment variable'
+            return 'Authentication failed!', 401
 
         # Get JSON data
         json_data = request.get_json(force=True)
