@@ -84,7 +84,7 @@ class Entries(Resource):
 	
         for row in cursor:
             result_as_dict = {
-		'_id' : row[0],
+#		'_id' : row[0],
                 'device' : row[1],
                 'date' : row[2],
                 'dateString' : row[3],
