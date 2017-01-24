@@ -17,7 +17,7 @@ With xDripAPS, the flow of data is as follows -
 1. Usually a Dexcom G5, or G4 plus xDrip wireless bridge.
 2. Either xDrip or xDrip+ can be used. In the app, the REST API Upload feature is normally used to upload CGM data to Nightscout. Instead, we use this feature to upload to xDripAPS on your OpenAPS rig (further details below).
 3. Your OpenAPS rig - usually a Raspberry Pi or an Intel Edison.
-4. The xDrip app is now uploading your data to xDripAPS on your OpenAPS rig rather than to Nightscout. OpenAPS will upload your CGM data to Nightscout instead.
+4. The xDrip app is now uploading your data to xDripAPS on your OpenAPS rig rather than to Nightscout. OpenAPS will now upload your CGM data to Nightscout as well as treatments, pump status, etc. So your Nightscout site will still be updated. Note that it will take a couple of minutes longer for CGM data to reach Nightscout, compared with when uploading directly from xDrip.
 
 ## Setup Steps (using oref0-setup.sh script)
 
