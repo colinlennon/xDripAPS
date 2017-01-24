@@ -40,7 +40,8 @@ Then, open xDrip or xDrip+ settings and in the REST API Upload setting, configur
 
 `http://<api_secret>@<rig_ip_address>:5000/api/v1/`
 
-Note: ensure you enter http:// (NOT https://). <api_secret> is the plain-text API secret you used when you set up OpenAPS/Nightscout and <rig_ip_address> is the IP address of your OpenAPS rig (starting 192.168). For example, this is the value I have configured (I have obscured my API secret) - 
+Note: ensure you enter http:// (NOT https://). <api_secret> is the plain-text API secret you used when you set up OpenAPS/Nightscout and <rig_ip_address> is the IP address of your OpenAPS rig (starting 192.168). For example, this is the value I have configured (I have obscured my API secret) -
+
 ![REST API Upload setting](https://github.com/colinlennon/xDripAPS/blob/master/xDrip_REST_API_cropped.png "REST API Upload setting")
 
 If using xDrip+ you also need to navigate to Settings > Cloud Upload > MongoDB and ensure that the "Skip LAN uploads" option is NOT selected. If you don't have this setting, update to a recent version of the xDrip+ app. (This option was added to a nightly build around December 2016).
