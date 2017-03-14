@@ -63,7 +63,7 @@ class Entries(Resource):
 	conn = sqlite3.connect(DB_FILE)
 
 	# Housekeeping first
-	qry =  "DELETE FROM entries WHERE ROWID IN " 
+	qry =  "DELETE FROM entries WHERE ROWID IN "
 	qry += "(SELECT ROWID FROM entries ORDER BY ROWID DESC LIMIT -1 OFFSET " + str(MAX_ROWS) + ")"
 	conn.execute(qry)
 	conn.commit()
@@ -72,16 +72,16 @@ class Entries(Resource):
 	count = request.args.get('count')
 
 	# Perform query and return JSON data
-        qry  = "SELECT ROWID as _id, device, date, dateString, sgv, direction, type, filtered, "
-        qry += "unfiltered, rssi, noise "
-        qry += "FROM entries ORDER BY date DESC"	
+    qry  = "SELECT ROWID as _id, device, date, dateString, sgv, direction, type, filtered, "
+    qry += "unfiltered, rssi, noise "
+    qry += "FROM entries ORDER BY date DESC"
 	if count != None:
 		qry += " LIMIT " + count
 
         results_as_dict = []
 
         cursor = conn.execute(qry)
-	
+
         for row in cursor:
             result_as_dict = {
 #		'_id' : row[0],
@@ -95,7 +95,7 @@ class Entries(Resource):
                 'unfiltered' : row[8],
                 'rssi' : row[9],
                 'noise' : row[10],
-	        'glucose' : row[4]}
+	            'glucose' : row[4]}
             results_as_dict.append(result_as_dict)
 
         conn.close()
@@ -103,14 +103,14 @@ class Entries(Resource):
 
     def post(self):
 
-       # Get hashed API secret from request
+        # Get hashed API secret from request
         request_secret_hashed = request.headers['Api_Secret']
         print 'request_secret_hashed : ' + request_secret_hashed
 
         # Get API_SECRET environment variable
         env_secret_hashed = os.environ['API_SECRET']
-	
-	# Authentication check
+
+        # Authentication check
         if request_secret_hashed != env_secret_hashed:
             print 'Authentication failure!'
             print 'API Secret passed in request does not match API_SECRET environment variable'
@@ -126,23 +126,42 @@ class Entries(Resource):
         sgv                             = json_data[0]['sgv']
         direction                       = json_data[0]['direction']
         type                            = json_data[0]['type']
-        filtered                        = json_data[0]['filtered']
-        unfiltered                      = json_data[0]['unfiltered']
-        rssi                            = json_data[0]['rssi']
-        noise                           = json_data[0]['noise']
-            
+        filtered                        = 0#json_data[0]['filtered']
+        unfiltered                      = 0#json_data[0]['unfiltered']
+        rssi                            = 0#json_data[0]['rssi']
+        noise                           = 0#json_data[0]['noise']
+
         # Perform insert
         qry  = "INSERT INTO entries (device, date, dateString, sgv, direction, type, "
         qry += "filtered, unfiltered, rssi, noise) "
         qry += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
- 
-        conn = sqlite3.connect(DB_FILE) 
-	conn.execute(qry, (device, date, dateString, sgv, direction, type, filtered, unfiltered, rssi, noise))
-	conn.commit()
-	conn.close()
+
+        conn = sqlite3.connect(DB_FILE)
+        conn.execute(qry, (device, date, dateString, sgv, direction, type, filtered, unfiltered, rssi, noise))
+        conn.commit()
+        conn.close()
         return '', 200
 
+class Test(Resource):
+    def get(self):
+        my_logger.debug('get request to /api/v1/experiments/test')
+        # Get hashed API secret from request
+        request_secret_hashed = request.headers['Api_Secret']
+        print 'request_secret_hashed : ' + request_secret_hashed
+
+        # Get API_SECRET environment variable
+        env_secret_hashed = os.environ['API_SECRET']
+
+        # Authentication check
+        if request_secret_hashed != env_secret_hashed:
+            print 'Authentication failure!'
+            print 'API Secret passed in request does not match API_SECRET environment variable'
+            return 'Authentication failed!', 401
+
+        return {"status": 'ok'}
+
 api.add_resource(Entries, '/api/v1/entries')
+api.add_resource(Test, '/api/v1/experiments/test')
 
 if __name__ == '__main__':
     startup_checks()
