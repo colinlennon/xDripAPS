@@ -140,7 +140,7 @@ class Entries(Resource):
         conn.execute(qry, (device, date, dateString, sgv, direction, type, filtered, unfiltered, rssi, noise))
         conn.commit()
         conn.close()
-        return '', 200
+        return json_data, 200
 
 class Test(Resource):
     def get(self):
