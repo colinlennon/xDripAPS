@@ -144,7 +144,6 @@ class Entries(Resource):
 
 class Test(Resource):
     def get(self):
-        my_logger.debug('get request to /api/v1/experiments/test')
         # Get hashed API secret from request
         request_secret_hashed = request.headers['Api_Secret']
         print 'request_secret_hashed : ' + request_secret_hashed
