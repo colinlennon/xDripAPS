@@ -59,24 +59,24 @@ class Entries(Resource):
 
     def get(self):
 
-	# Connect to database
-	conn = sqlite3.connect(DB_FILE)
+    	# Connect to database
+    	conn = sqlite3.connect(DB_FILE)
 
-	# Housekeeping first
-	qry =  "DELETE FROM entries WHERE ROWID IN "
-	qry += "(SELECT ROWID FROM entries ORDER BY ROWID DESC LIMIT -1 OFFSET " + str(MAX_ROWS) + ")"
-	conn.execute(qry)
-	conn.commit()
+    	# Housekeeping first
+    	qry =  "DELETE FROM entries WHERE ROWID IN "
+    	qry += "(SELECT ROWID FROM entries ORDER BY ROWID DESC LIMIT -1 OFFSET " + str(MAX_ROWS) + ")"
+    	conn.execute(qry)
+    	conn.commit()
 
-	# Get count parameter
-	count = request.args.get('count')
+    	# Get count parameter
+    	count = request.args.get('count')
 
-	# Perform query and return JSON data
-    qry  = "SELECT ROWID as _id, device, date, dateString, sgv, direction, type, filtered, "
-    qry += "unfiltered, rssi, noise "
-    qry += "FROM entries ORDER BY date DESC"
-	if count != None:
-		qry += " LIMIT " + count
+    	# Perform query and return JSON data
+        qry  = "SELECT ROWID as _id, device, date, dateString, sgv, direction, type, filtered, "
+        qry += "unfiltered, rssi, noise "
+        qry += "FROM entries ORDER BY date DESC"
+	    if count != None:
+            qry += " LIMIT " + count
 
         results_as_dict = []
 
