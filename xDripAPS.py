@@ -75,7 +75,7 @@ class Entries(Resource):
         qry  = "SELECT ROWID as _id, device, date, dateString, sgv, direction, type, filtered, "
         qry += "unfiltered, rssi, noise "
         qry += "FROM entries ORDER BY date DESC"
-	    if count != None:
+        if count != None:
             qry += " LIMIT " + count
 
         results_as_dict = []
