@@ -119,28 +119,43 @@ class Entries(Resource):
         # Get JSON data
         json_data = request.get_json(force=True)
 
-        # Get column values (assuming exactly one record as data source is xDrip)
-        device                          = json_data[0]['device']
-        date                            = json_data[0]['date']
-        dateString                      = json_data[0]['dateString']
-        sgv                             = json_data[0]['sgv']
-        direction                       = json_data[0]['direction']
-        type                            = json_data[0]['type']
-        filtered                        = 0#json_data[0]['filtered']
-        unfiltered                      = 0#json_data[0]['unfiltered']
-        rssi                            = 0#json_data[0]['rssi']
-        noise                           = 0#json_data[0]['noise']
+        conn = sqlite3.connect(DB_FILE)
 
-        # Perform insert
+        # build qry string
         qry  = "INSERT INTO entries (device, date, dateString, sgv, direction, type, "
         qry += "filtered, unfiltered, rssi, noise) "
         qry += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
-        conn = sqlite3.connect(DB_FILE)
-        conn.execute(qry, (device, date, dateString, sgv, direction, type, filtered, unfiltered, rssi, noise))
-        conn.commit()
+        # list of successfully inserted entries, to return
+        inserted_entries = []
+
+        # Get column values (json_data will contain exactly one record if data source is xDrip
+        # but could contain more than one record if data source is xDripG5 for iOS)
+        for entry in json_data:
+            device          = entry['device']
+            date            = entry['date']
+            dateString      = entry['dateString']
+            sgv             = entry['sgv']
+            direction       = entry['direction']
+            type            = entry['type']
+            filtered        = entry['filtered'] if 'filtered' in entry else None
+            unfiltered      = entry['unfiltered'] if 'unfiltered' in entry else None
+            rssi            = entry['rssi'] if 'rssi' in entry else None
+            noise           = entry['noise'] if 'noise' in entry else None
+
+            # Perform insert
+            try:
+                conn.execute(qry, (device, date, dateString, sgv, direction, type, filtered, unfiltered, rssi, noise))
+                conn.commit()
+            except sqlite3.Error:
+                continue
+
+            inserted_entries.append(entry)
+
         conn.close()
-        return json_data, 200
+
+        # return entries that have been added successfully
+        return inserted_entries, 200
 
 class Test(Resource):
     def get(self):
