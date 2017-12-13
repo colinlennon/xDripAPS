@@ -59,32 +59,32 @@ class Entries(Resource):
 
     def get(self):
 
-	# Connect to database
-	conn = sqlite3.connect(DB_FILE)
+    	# Connect to database
+    	conn = sqlite3.connect(DB_FILE)
 
-	# Housekeeping first
-	qry =  "DELETE FROM entries WHERE ROWID IN " 
-	qry += "(SELECT ROWID FROM entries ORDER BY ROWID DESC LIMIT -1 OFFSET " + str(MAX_ROWS) + ")"
-	conn.execute(qry)
-	conn.commit()
+    	# Housekeeping first
+    	qry =  "DELETE FROM entries WHERE ROWID IN "
+    	qry += "(SELECT ROWID FROM entries ORDER BY ROWID DESC LIMIT -1 OFFSET " + str(MAX_ROWS) + ")"
+    	conn.execute(qry)
+    	conn.commit()
 
-	# Get count parameter
-	count = request.args.get('count')
+    	# Get count parameter
+    	count = request.args.get('count')
 
-	# Perform query and return JSON data
+    	# Perform query and return JSON data
         qry  = "SELECT ROWID as _id, device, date, dateString, sgv, direction, type, filtered, "
         qry += "unfiltered, rssi, noise "
-        qry += "FROM entries ORDER BY date DESC"	
-	if count != None:
-		qry += " LIMIT " + count
+        qry += "FROM entries ORDER BY date DESC"
+        if count != None:
+            qry += " LIMIT " + count
 
         results_as_dict = []
 
         cursor = conn.execute(qry)
-	
+
         for row in cursor:
             result_as_dict = {
-		'_id' : row[0],
+#		'_id' : row[0],
                 'device' : row[1],
                 'date' : row[2],
                 'dateString' : row[3],
@@ -95,7 +95,7 @@ class Entries(Resource):
                 'unfiltered' : row[8],
                 'rssi' : row[9],
                 'noise' : row[10],
-	        'glucose' : row[4]}
+	            'glucose' : row[4]}
             results_as_dict.append(result_as_dict)
 
         conn.close()
@@ -103,14 +103,14 @@ class Entries(Resource):
 
     def post(self):
 
-       # Get hashed API secret from request
+        # Get hashed API secret from request
         request_secret_hashed = request.headers['Api_Secret']
         print 'request_secret_hashed : ' + request_secret_hashed
 
         # Get API_SECRET environment variable
         env_secret_hashed = os.environ['API_SECRET']
-	
-	# Authentication check
+
+        # Authentication check
         if request_secret_hashed != env_secret_hashed:
             print 'Authentication failure!'
             print 'API Secret passed in request does not match API_SECRET environment variable'
@@ -119,30 +119,63 @@ class Entries(Resource):
         # Get JSON data
         json_data = request.get_json(force=True)
 
-        # Get column values (assuming exactly one record as data source is xDrip)
-        device                          = json_data[0]['device']
-        date                            = json_data[0]['date']
-        dateString                      = json_data[0]['dateString']
-        sgv                             = json_data[0]['sgv']
-        direction                       = json_data[0]['direction']
-        type                            = json_data[0]['type']
-        filtered                        = json_data[0]['filtered']
-        unfiltered                      = json_data[0]['unfiltered']
-        rssi                            = json_data[0]['rssi']
-        noise                           = json_data[0]['noise']
-            
-        # Perform insert
+        conn = sqlite3.connect(DB_FILE)
+
+        # build qry string
         qry  = "INSERT INTO entries (device, date, dateString, sgv, direction, type, "
         qry += "filtered, unfiltered, rssi, noise) "
         qry += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
- 
-        conn = sqlite3.connect(DB_FILE) 
-	conn.execute(qry, (device, date, dateString, sgv, direction, type, filtered, unfiltered, rssi, noise))
-	conn.commit()
-	conn.close()
-        return '', 200
+
+        # list of successfully inserted entries, to return
+        inserted_entries = []
+
+        # Get column values (json_data will contain exactly one record if data source is xDrip
+        # but could contain more than one record if data source is xDripG5 for iOS)
+        for entry in json_data:
+            device          = entry['device']
+            date            = entry['date']
+            dateString      = entry['dateString']
+            sgv             = entry['sgv']
+            direction       = entry['direction']
+            type            = entry['type']
+            filtered        = entry['filtered'] if 'filtered' in entry else None
+            unfiltered      = entry['unfiltered'] if 'unfiltered' in entry else None
+            rssi            = entry['rssi'] if 'rssi' in entry else None
+            noise           = entry['noise'] if 'noise' in entry else None
+
+            # Perform insert
+            try:
+                conn.execute(qry, (device, date, dateString, sgv, direction, type, filtered, unfiltered, rssi, noise))
+                conn.commit()
+            except sqlite3.Error:
+                continue
+
+            inserted_entries.append(entry)
+
+        conn.close()
+
+        # return entries that have been added successfully
+        return inserted_entries, 200
+
+class Test(Resource):
+    def get(self):
+        # Get hashed API secret from request
+        request_secret_hashed = request.headers['Api_Secret']
+        print 'request_secret_hashed : ' + request_secret_hashed
+
+        # Get API_SECRET environment variable
+        env_secret_hashed = os.environ['API_SECRET']
+
+        # Authentication check
+        if request_secret_hashed != env_secret_hashed:
+            print 'Authentication failure!'
+            print 'API Secret passed in request does not match API_SECRET environment variable'
+            return 'Authentication failed!', 401
+
+        return {"status": 'ok'}
 
 api.add_resource(Entries, '/api/v1/entries')
+api.add_resource(Test, '/api/v1/experiments/test')
 
 if __name__ == '__main__':
     startup_checks()
